@@ -184,11 +184,14 @@ class Message:
         )
 
     # Utility Functions
+    #OpenC2 specific validation
+    #TODO?: Add OpenC2 Toggle
     def _validate_content(self, val: dict) -> dict:
         msg_keys = {*val.keys()}
         if self.msg_type == MessageType.Request:
-            if req_keys := ({"action", "target"} - msg_keys):
-                raise KeyError(f"Message is missing a required key(s) of {', '.join(req_keys)}")
+            #if req_keys := ({"action", "target"} - msg_keys):
+            #    raise KeyError(f"Message is missing a required key(s) of {', '.join(req_keys)}")
+            pass
         elif self.msg_type == MessageType.Response:
             if req_keys := ({"status", } - msg_keys):
                 raise KeyError(f"Message is missing a required key(s) of {', '.join(req_keys)}")
