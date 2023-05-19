@@ -121,5 +121,7 @@ FieldAlias = FrozenDict({
     "name": "name_",
     "raise": "raise_",
     "update": "update_",
-    "yield": "yield_"
+    "yield": "yield_",
+    "value": "value_",
+    "description": "description_"
 })
