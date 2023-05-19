@@ -136,10 +136,20 @@ class Choice(DefinitionBase, metaclass=OptionalFieldsMeta):
         # TODO: finish validation
         if len(value.keys()) != 1:
             raise ValidationError(f"Choice type should only have one field, not {len(value.keys())}")
-        return value
+        
+        #check if selection is valid
+        val = list(value.keys())[0]
+        for v in cls.__fields__.keys():
+            if val == v:
+                return value
+        
+        raise ValidationError(f"Value `{val}` is not valid for {cls.name}")
 
     class Options:
         data_type = "Choice"
+
+    class Config:
+        extra = Extra.allow
 
 
 class Enumerated(DefinitionBase, metaclass=EnumeratedMeta):  # pylint: disable=invalid-metaclass
@@ -175,7 +185,7 @@ class Enumerated(DefinitionBase, metaclass=EnumeratedMeta):  # pylint: disable=i
             for v in cls.__enums__:
                 if val == v.name:
                     return value
-        raise ValidationError(f"Value `{val}` is not a valid for {cls.name}")
+        raise ValidationError(f"Value `{val}` is not valid for {cls.name}")
 
     # Helpers
     @classmethod

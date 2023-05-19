@@ -86,6 +86,6 @@ class BaseModel(pydanticBase):
         """
         Configuration data for base class of `pydantic.main.BaseModel`
         """
-        # extra = Extra.forbid
+        extra = Extra.forbid
         # Matt 12-22-22 may need to change back to forbid....
-        extra = Extra.allow
+        # extra = Extra.allow
