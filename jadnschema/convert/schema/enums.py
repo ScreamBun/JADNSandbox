@@ -16,6 +16,8 @@ class SchemaFormats(str, EnumBase):
     # Proto = "proto"    #: Convert to [ProtoBuf Format](https://developers.google.com/protocol-buffers/docs/proto3)
     Relax = "rng"      #: Convert to [RelaxNG Format](https://relaxng.org/spec-20011203.html)
     # Thrift = "thrift"  #: Convert to [Thrift Format](https://thrift.apache.org/)
+    JSON = "json"        #: Using JADN PyPkg, no logic in JADN Schema 
+    PlantUML = "puml"    #: Using JADN PyPkg, no logic in JADN Schema
 
 
 class CommentLevels(str, EnumBase):
