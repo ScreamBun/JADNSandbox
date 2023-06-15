@@ -67,15 +67,16 @@ class Array(DefinitionBase):
         :return: original data
         """
 
-        orgValue = value
         if isinstance(value, (GetterDict)):
             value = value._obj
 
-        if fmt := cls.__options__.format:
-            print(f"Array format: {value}")
-            validate_format(cls, fmt, value)
-        # TODO: finish validation
-        return orgValue
+            if fmt := cls.__options__.format:
+                print(f"Array format: {value}")
+                validate_format(cls, fmt, value)
+
+            value = {k:v for k,v in zip(cls.__fields__.keys(), value)}
+
+        return value
 
     class Options:
         data_type = "Array"
@@ -133,7 +134,7 @@ class Choice(DefinitionBase, metaclass=OptionalFieldsMeta):
         :raise ValueError: invalid data given
         :return: original data
         """
-        # TODO: finish validation
+        # TODO: finish validation ?
         if len(value.keys()) != 1:
             raise ValidationError(f"Choice type should only have one field, not {len(value.keys())}")
         
@@ -246,6 +247,10 @@ class MapOf(DefinitionBase):
         :return: original data
         """
         # TODO: finish validation
+        # check ktype/vtype
+        # invalid if any of its elements is not an instance of vtype.
+        # invalid if any of its keys is not an instance of ktype.
+        # invalid if its number of elements is less than minv or greater than maxv.
         return value
 
     # Helpers

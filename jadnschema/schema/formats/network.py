@@ -47,18 +47,20 @@ def hostname(val: str) -> str:
 @addKey(d=NetworkFormats, k="ipv4")
 def IPv4(val: str) -> IPv4Address:
     """
+    JSON Schema
     RFC 2673 § 3.2# "dotted-quad"
-    :param val: IPv6 Address to validate
+    :param val: IPv4 Address to validate
     :return: None or Exception
     """
     if not isinstance(val, str):
-        raise TypeError(f"IPv4 given is not expected string, given {type(val)}")
+        raise TypeError(f"IPv4 address given is not expected string, given {type(val)}")
     return IPv4Address(val)
 
 
 @addKey(d=NetworkFormats, k="ipv6")
 def IPv6(val: str) -> IPv6Address:
     """
+    JSON Schema
     RFC 4291 § 2.2 "IPv6 address"
     :param val: IPv6 Address to validate
     :return: None or Exception
@@ -84,24 +86,32 @@ def EUI(val: Union[bytes, str]) -> netaddr.EUI:
 
 # How to validate??
 @addKey(d=NetworkFormats, k="ipv4-addr")
-def IPv4_Address(val: str) -> Optional[Exception]:
+def IPv4_Address(val: str) -> IPv4Address:
     """
-    IPv4 address as specified in RFC 791 § 3.1
+    IPv4 address as specified in RFC 791 § 3.1 /
+    RFC 2673 § 3.2# "dotted-quad"
     :param val: IPv4 Address to validate
     :return: None or Exception
     """
-    # Convert val to bytes
+    # Convert val to bytes ??
+    if not isinstance(val, str):
+        raise TypeError(f"IPv4 address given is not expected string, given {type(val)}")
+    return IPv4Address(val)
 
 
 # How to validate??
 @addKey(d=NetworkFormats, k="ipv6-addr")
-def IPv6_Address(val: str) -> Optional[Exception]:
+def IPv6_Address(val: str) -> IPv6Address:
     """
-    IPv6 address as specified in RFC 8200 § 3
-    :param val: IPv4 Address to validate
+    IPv6 address as specified in RFC 8200 § 3 /
+    RFC 4291 § 2.2 "IPv6 address"
+    :param val: IPv6 Address to validate
     :return: None or Exception
     """
-    # Convert val to bytes
+    # Convert val to bytes ??
+    if not isinstance(val, str):
+        raise TypeError(f"IPv6 address given is not expected string, given {type(val)}")
+    return IPv6Address(val)
 
 
 @addKey(d=NetworkFormats, k="ipv4-net")
