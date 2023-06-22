@@ -160,7 +160,18 @@ def IPv6_Network(val: Union[list, str, tuple]) -> Union[IPv6Address, IPv6Network
     if not isinstance(val, (list, str, tuple)):
         raise TypeError(f"IPv6 Network is not expected type, given {type(val)}")
 
-    val = val if isinstance(val, (list, tuple)) else val.split("/")
+    #val = val if isinstance(val, (list, tuple)) else val.split("/")
+    if isinstance(val, (list, tuple)):
+        val = val
+    elif '/' in val:
+        val = val.split("/")
+        bytes = base64.b64decode(val[0]) #decode
+        bin = bytes.decode("ascii")
+        val = [bin, val[1]]
+    else:
+        bytes = base64.b64decode(val) #decode
+        val = [bytes.decode("ascii")]
+        
     if len(val) == 1:
         return IPv6(val[0])
 
