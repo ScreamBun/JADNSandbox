@@ -74,7 +74,30 @@ class Array(DefinitionBase):
                 print(f"Array format: {value}")
                 validate_format(cls, fmt, value)
 
+                # special case : format MTI3LjAuMC4x/30 to [MTI3LjAuMC4x, 30]
+                if isinstance(value, (list, tuple)):
+                    value = value
+                elif '/' in value:
+                    val = value.split("/")
+                    value = []
+                    for i in val:
+                        if i.isdigit():
+                            value.append(int(i))
+                        else:
+                            value.append(i)
+                else:
+                    value = [value]
+    
+            # PASS : {ipv4-addr: MTI3LjAuMC4x, prefix-length: 30}
             value = {k:v for k,v in zip(cls.__fields__.keys(), value)}
+
+            if (minProps := cls.__options__.minv) and isinstance(minProps, int):
+                if len(value) < minProps:
+                    raise ValidationError("minimum property count not met")
+
+            if (maxProps := cls.__options__.maxv) and isinstance(maxProps, int):
+                if len(value) > maxProps:
+                    raise ValidationError("maximum property count exceeded")
 
         return value
 
@@ -100,6 +123,16 @@ class ArrayOf(DefinitionBase):
         :return: original data
         """
         val = value.get("__root__", None)
+
+        # TODO: check minv maxv
+        if (minProps := cls.__options__.minv) and isinstance(minProps, int):
+            if len(val) < minProps:
+                raise ValidationError("minimum property count not met")
+
+        if (maxProps := cls.__options__.maxv) and isinstance(maxProps, int):
+            if len(val) > maxProps:
+                raise ValidationError("maximum property count exceeded")
+
         vtype = cls.__options__.vtype
         if val_cls := cls.__config__.types.get(vtype):
             return {"__root__": [val_cls.validate(v) for v in val]}
@@ -134,7 +167,7 @@ class Choice(DefinitionBase, metaclass=OptionalFieldsMeta):
         :raise ValueError: invalid data given
         :return: original data
         """
-        # TODO: finish validation ?
+
         if len(value.keys()) != 1:
             raise ValidationError(f"Choice type should only have one field, not {len(value.keys())}")
         
