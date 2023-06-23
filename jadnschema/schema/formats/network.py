@@ -95,8 +95,12 @@ def IPv4_Address(val: str) -> IPv4Address:
     :return: None or Exception
     """
     # Convert val to bytes
-    bytes = base64.b64decode(val)
-    val = bytes.decode("ascii")
+    try:
+        bytes = base64.b64decode(val)
+        val = bytes.decode("ascii")
+    except Exception as e:
+        raise TypeError(f"IPv4 address given is not base64-encoded")
+ 
     if not isinstance(val, str):
         raise TypeError(f"IPv4 address given is not expected string, given {type(val)}")
     return IPv4Address(val)
@@ -111,8 +115,12 @@ def IPv6_Address(val: str) -> IPv6Address:
     :return: None or Exception
     """
     # Convert val to bytes
-    bytes = base64.b64decode(val)
-    val = bytes.decode("ascii")
+    try:
+        bytes = base64.b64decode(val)
+        val = bytes.decode("ascii")
+    except Exception as e:
+        raise TypeError(f"IPv6 address given is not base64-encoded")
+    
     if not isinstance(val, str):
         raise TypeError(f"IPv6 address given is not expected string, given {type(val)}")
     return IPv6Address(val)
@@ -133,12 +141,18 @@ def IPv4_Network(val: Union[list, str, tuple]) -> Union[IPv4Address, IPv4Network
         val = val
     elif '/' in val:
         val = val.split("/")
-        bytes = base64.b64decode(val[0]) #decode
-        bin = bytes.decode("ascii")
+        try:
+            bytes = base64.b64decode(val[0]) #decode
+            bin = bytes.decode("ascii")
+        except Exception as e:
+            raise TypeError(f"IPv4 address given is not base64-encoded")
         val = [bin, val[1]]
     else:
-        bytes = base64.b64decode(val) #decode
-        val = [bytes.decode("ascii")]
+        try:
+            bytes = base64.b64decode(val) #decode
+            val = [bytes.decode("ascii")]
+        except Exception as e:
+            raise TypeError(f"IPv4 address given is not base64-encoded")
     
     if len(val) == 1:
         return IPv4(val[0])
@@ -165,12 +179,18 @@ def IPv6_Network(val: Union[list, str, tuple]) -> Union[IPv6Address, IPv6Network
         val = val
     elif '/' in val:
         val = val.split("/")
-        bytes = base64.b64decode(val[0]) #decode
-        bin = bytes.decode("ascii")
+        try:
+            bytes = base64.b64decode(val[0]) #decode
+            bin = bytes.decode("ascii")
+        except Exception as e:
+            raise TypeError(f"IPv6 address given is not base64-encoded")
         val = [bin, val[1]]
     else:
-        bytes = base64.b64decode(val) #decode
-        val = [bytes.decode("ascii")]
+        try:
+            bytes = base64.b64decode(val) #decode
+            val = [bytes.decode("ascii")]
+        except Exception as e:
+            raise TypeError(f"IPv6 address given is not base64-encoded")
         
     if len(val) == 1:
         return IPv6(val[0])
