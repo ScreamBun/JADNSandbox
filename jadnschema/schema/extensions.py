@@ -123,7 +123,8 @@ def unfold_link(defs: DefinitionDict, sys: str) -> NoReturn:
                             description=field_def.description
                         )
                     # Redirect field to explicit type definition
-                    field_def.update(
+                    field_def = DefType(
+                        name=new_name,
                         type=new_name,
                         options=field_opts
                     )

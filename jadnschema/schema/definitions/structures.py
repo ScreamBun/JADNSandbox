@@ -124,7 +124,6 @@ class ArrayOf(DefinitionBase):
         """
         val = value.get("__root__", None)
 
-        # TODO: check minv maxv
         if (minProps := cls.__options__.minv) and isinstance(minProps, int):
             if len(val) < minProps:
                 raise ValidationError("minimum property count not met")
