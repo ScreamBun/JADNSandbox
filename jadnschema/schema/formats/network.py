@@ -97,9 +97,9 @@ def IPv4_Address(val: str) -> IPv4Address:
     # Convert val to bytes
     try:
         bytes = base64.b64decode(val)
-        val = bytes.decode("ascii")
+        val = bytes.decode("utf-8")
     except Exception as e:
-        raise TypeError(f"IPv4 address given is not base64-encoded")
+            raise TypeError(f"{e}")
  
     if not isinstance(val, str):
         raise TypeError(f"IPv4 address given is not expected string, given {type(val)}")
@@ -117,9 +117,9 @@ def IPv6_Address(val: str) -> IPv6Address:
     # Convert val to bytes
     try:
         bytes = base64.b64decode(val)
-        val = bytes.decode("ascii")
+        val = bytes.decode("utf-8")
     except Exception as e:
-        raise TypeError(f"IPv6 address given is not base64-encoded")
+            raise TypeError(f"{e}")
     
     if not isinstance(val, str):
         raise TypeError(f"IPv6 address given is not expected string, given {type(val)}")
@@ -143,16 +143,16 @@ def IPv4_Network(val: Union[list, str, tuple]) -> Union[IPv4Address, IPv4Network
         val = val.split("/")
         try:
             bytes = base64.b64decode(val[0]) #decode
-            bin = bytes.decode("ascii")
+            bin = bytes.decode("utf-8")
         except Exception as e:
-            raise TypeError(f"IPv4 address given is not base64-encoded")
+            raise TypeError(f"{e}")
         val = [bin, val[1]]
     else:
         try:
             bytes = base64.b64decode(val) #decode
-            val = [bytes.decode("ascii")]
+            val = [bytes.decode("utf-8")]
         except Exception as e:
-            raise TypeError(f"IPv4 address given is not base64-encoded")
+            raise TypeError(f"{e}")
     
     if len(val) == 1:
         return IPv4(val[0])
@@ -181,16 +181,16 @@ def IPv6_Network(val: Union[list, str, tuple]) -> Union[IPv6Address, IPv6Network
         val = val.split("/")
         try:
             bytes = base64.b64decode(val[0]) #decode
-            bin = bytes.decode("ascii")
+            bin = bytes.decode("utf-8")
         except Exception as e:
-            raise TypeError(f"IPv6 address given is not base64-encoded")
+            raise TypeError(f"{e}")
         val = [bin, val[1]]
     else:
         try:
             bytes = base64.b64decode(val) #decode
-            val = [bytes.decode("ascii")]
+            val = [bytes.decode("utf-8")]
         except Exception as e:
-            raise TypeError(f"IPv6 address given is not base64-encoded")
+            raise TypeError(f"{e}")
         
     if len(val) == 1:
         return IPv6(val[0])
