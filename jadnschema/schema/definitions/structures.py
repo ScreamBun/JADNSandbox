@@ -5,6 +5,9 @@ from enum import Enum, EnumMeta
 from typing import Any, ClassVar, Optional, Union
 from pydantic import Extra, ValidationError, root_validator
 from pydantic.utils import GetterDict
+
+from jadnschema.schema.consts import PRIMITIVE_TYPES
+
 from .definitionBase import DefinitionBase, DefinitionMeta
 from .options import Options  # pylint: disable=unused-import
 from .primitives import validate_format
@@ -135,6 +138,8 @@ class ArrayOf(DefinitionBase):
         vtype = cls.__options__.vtype
         if val_cls := cls.__config__.types.get(vtype):
             return {"__root__": [val_cls.validate(v) for v in val]}
+        #check if primitive type
+
         raise ValueError(f"ValueType of `{vtype}` is not valid within the schema")
 
     # Helpers
@@ -278,11 +283,38 @@ class MapOf(DefinitionBase):
         :raise ValueError: invalid data given
         :return: original data
         """
-        # TODO: finish validation
-        # check ktype/vtype
-        # invalid if any of its elements is not an instance of vtype.
+
         # invalid if any of its keys is not an instance of ktype.
-        # invalid if its number of elements is less than minv or greater than maxv.
+        ktype = cls.__options__.ktype
+        if val_cls := cls.__config__.types.get(ktype):
+           for k in value.keys():
+            val_cls.validate(k) 
+        else:
+            raise ValueError(f"KeyType of `{ktype}` is not valid within the schema")
+
+
+        # invalid if any of its elements is not an instance of vtype.
+        vtype = cls.__options__.vtype
+        if val_cls := cls.__config__.types.get(vtype):
+           for v in value.values():
+               val_cls.validate(v) 
+        #check if primitive type
+        elif vtype in PRIMITIVE_TYPES:
+            for v in value.values():
+                print(isinstance(v, vtype))
+#                print(vtype.validate(v))
+
+        else:
+            raise ValueError(f"ValueType of `{vtype}` is not valid within the schema")
+
+        if (minProps := cls.__options__.minv) and isinstance(minProps, int):
+            if len(value) < minProps:
+                raise ValidationError("minimum property count not met")
+
+        if (maxProps := cls.__options__.maxv) and isinstance(maxProps, int):
+            if len(value) > maxProps:
+                raise ValidationError("maximum property count exceeded")
+            
         return value
 
     # Helpers
