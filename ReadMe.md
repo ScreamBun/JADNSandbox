@@ -10,10 +10,11 @@ This logic can be added to other projects via the python whl.
    1) pip install -r requirements_dev.txt
 
 ## How to create the whl
-1) Run: python setup.py bdist_wheel --universal
-2) Under dist, locate: jadnschema-0.1.0-py2.py3-none-any.whl
-3) Copy to the repo or project that requires this functionality
-4) To add to the other project run: pip install jadnschema-0.1.0-py2.py3-none-any.whl
+1) From setup.cfgl, update the version
+2) Run: python setup.py bdist_wheel --universal
+3) Under dist, locate: jadnschema-*-py2.py3-none-any.whl
+4) Copy to the repo or project that requires this functionality
+5) To add to the other project run: pip install jadnschema-*-py2.py3-none-any.whl
 
 ## Creating the Docs
 1) Run: python mkdocs.py
