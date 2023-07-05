@@ -7,6 +7,7 @@ from pydantic import Extra, ValidationError, root_validator
 from pydantic.utils import GetterDict
 
 from jadnschema.schema.consts import PRIMITIVE_TYPES
+from jadnschema.utils.general import check_values
 
 from .definitionBase import DefinitionBase, DefinitionMeta
 from .options import Options  # pylint: disable=unused-import
@@ -301,7 +302,10 @@ class MapOf(DefinitionBase):
         #check if primitive type
         elif vtype in PRIMITIVE_TYPES:
             for v in value.values():
-                print(isinstance(v, vtype))
+                val = check_values(v, vtype)
+                print("hit: " + val)
+                print(vtype.validate(v))
+                # print(isinstance(v, vtype))
 #                print(vtype.validate(v))
 
         else:
