@@ -139,8 +139,11 @@ class ArrayOf(DefinitionBase):
         if val_cls := cls.__config__.types.get(vtype):
             return {"__root__": [val_cls.validate(v) for v in val]}
         #check if primitive type
-
-        raise ValueError(f"ValueType of `{vtype}` is not valid within the schema")
+        elif vtype in PRIMITIVE_TYPES:
+            raise ValueError(f"ValueType of `{vtype}` is valid --- Need to finish validation")
+            #for v in value.values():
+        else:
+            raise ValueError(f"ValueType of `{vtype}` is not valid within the schema")
 
     # Helpers
     @classmethod
@@ -300,9 +303,8 @@ class MapOf(DefinitionBase):
                val_cls.validate(v) 
         #check if primitive type
         elif vtype in PRIMITIVE_TYPES:
-            for v in value.values():
-                print(isinstance(v, vtype))
-#                print(vtype.validate(v))
+            raise ValueError(f"ValueType of `{vtype}` is valid --- Need to finish validation")
+            #for v in value.values():
 
         else:
             raise ValueError(f"ValueType of `{vtype}` is not valid within the schema")
