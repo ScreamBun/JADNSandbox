@@ -6,12 +6,9 @@ from typing import Any, ClassVar, Optional, Union
 from pydantic import Extra, ValidationError, root_validator
 from pydantic.utils import GetterDict
 
-from jadnschema.schema.consts import PRIMITIVE_TYPES
-from jadnschema.utils.general import check_values
-
 from .definitionBase import DefinitionBase, DefinitionMeta
 from .options import Options  # pylint: disable=unused-import
-from .primitives import String, validate_format
+from .primitives import validate_format
 
 __all__ = ["Array", "ArrayOf", "Choice", "Enumerated", "Map", "MapOf", "Record"]
 
@@ -158,21 +155,6 @@ class ArrayOf(DefinitionBase):
                 if not isinstance(v, (int, float, str)):
                     raise ValueError(f"Value of `{v}` is not valid within the schema") 
 
-            # raise ValueError(f"ValueType of `{vtype}` is not valid within the schema") 
-            #for v in value.values():
-        # else:
-        #     raise ValueError(f"ValueType of `{vtype}` is not valid within the schema")               
-
-        # vtype = cls.__options__.vtype
-        # if val_cls := cls.__config__.types.get(vtype):
-        #     return {"__root__": [val_cls.validate(v) for v in val]}
-        # #check if primitive type
-        # elif vtype in PRIMITIVE_TYPES:
-        #     raise ValueError(f"ValueType of `{vtype}` is valid --- Need to finish validation")
-        #     #for v in value.values():
-        # else:
-        #     raise ValueError(f"ValueType of `{vtype}` is not valid within the schema")
-
         return value
 
     # Helpers
@@ -208,8 +190,6 @@ class Choice(DefinitionBase, metaclass=OptionalFieldsMeta):
         # If primative directly in choice
         if val := value.get("__root__"):
 
-            # This is where it's failing left off here.  See recursive logic in other inner classes
-            # Attempting to get to primatives  
             if len(value.keys()) > 1:
                 raise ValidationError(f"Choice type should only have one field, not {len(value.keys())}")
             
