@@ -191,13 +191,13 @@ class Choice(DefinitionBase, metaclass=OptionalFieldsMeta):
         if val := value.get("__root__"):
 
             if len(value.keys()) > 1:
-                raise ValidationError(f"Choice type should only have one field, not {len(value.keys())}")
+                raise ValueError(f"Choice type should only have one field, not {len(value.keys())}")
             
             for v in cls.__fields__.keys():
                 if val == v:
                     return value
                 
-            raise ValidationError(f"Value `{val}` is not valid for {cls.name}")
+            raise ValueError(f"Value `{val}` is not valid for {cls.name}")
                 
         # Else object found, regular pydantic validation
         else:
@@ -244,7 +244,7 @@ class Enumerated(DefinitionBase, metaclass=EnumeratedMeta):  # pylint: disable=i
             for v in cls.__enums__:
                 if val == v.name:
                     return value
-        raise ValidationError(f"Value `{val}` is not valid for {cls.name}")
+        raise ValueError(f"Value `{val}` is not valid for {cls.name}")
 
     # Helpers
     @classmethod
@@ -270,6 +270,12 @@ class Map(DefinitionBase):
     # Validation
     @root_validator(pre=True)
     def validate_data(cls, value: dict):  # pylint: disable=no-self-argument
+
+        schema_keys = cls.__fields__.keys()
+        for msg_k, msg_v in value.items():
+            if msg_k not in schema_keys:
+                raise ValueError(f"KeyType of `{msg_k}` is not valid within the schema") 
+
         if (minProps := cls.__options__.minv) and isinstance(minProps, int):
             if len(value) < minProps:
                 raise ValidationError("minimum property count not met")

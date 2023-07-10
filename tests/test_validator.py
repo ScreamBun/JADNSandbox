@@ -12,6 +12,7 @@ class CommandValidation(TestCase):
     _test_root = os.path.join(os.path.abspath(os.path.dirname(__file__)))
     # _schema = f"{_test_root}/schema/oc2ls-v1.1-lang_resolved.jadn"
     _schema = f"{_test_root}/schema/oc2ls-v1.0.1-resolved.jadn"
+    # _schema = f"{_test_root}/schema/test-schema.jadn"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -22,15 +23,24 @@ class CommandValidation(TestCase):
             "status": 200,
             "results": {
                 "pairs": {
-                "scan": [
-                    "command"
-                ]
+                    "scan": [
+                        "command"
+                    ]
                 },
                 "versions": [
                 "1.1"
                 ]
             }
         })
+
+    def test_invalid_email(self):
+        with self.assertRaises(ValidationError):
+            self._schema_obj.validate_as(CMD_TYPE, {
+                "action": "allow",
+                "target": {
+                    "email_addr": "test.testabc.com"
+                }
+            })
 
     def test_allow_email_Chinese_Unicode(self):
         self._schema_obj.validate_as(CMD_TYPE, {
