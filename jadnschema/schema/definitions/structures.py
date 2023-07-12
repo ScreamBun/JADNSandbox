@@ -94,11 +94,11 @@ class Array(DefinitionBase):
 
             if (minProps := cls.__options__.minv) and isinstance(minProps, int):
                 if len(value) < minProps:
-                    raise ValidationError("minimum property count not met")
+                    raise ValueError("minimum property count not met")
 
             if (maxProps := cls.__options__.maxv) and isinstance(maxProps, int):
                 if len(value) > maxProps:
-                    raise ValidationError("maximum property count exceeded")
+                    raise ValueError("maximum property count exceeded")
 
         return value
 
