@@ -3,10 +3,8 @@ JADN Structure Types
 """
 from enum import Enum, EnumMeta
 from typing import Any, ClassVar, Optional, Union
-from pydantic import Extra, ValidationError, root_validator
+from pydantic import Extra, root_validator
 from pydantic.utils import GetterDict
-
-from jadnschema.schema.consts import PRIMITIVE_TYPES
 
 from .definitionBase import DefinitionBase, DefinitionMeta
 from .options import Options  # pylint: disable=unused-import
@@ -96,11 +94,11 @@ class Array(DefinitionBase):
 
             if (minProps := cls.__options__.minv) and isinstance(minProps, int):
                 if len(value) < minProps:
-                    raise ValidationError("minimum property count not met")
+                    raise ValueError("minimum property count not met")
 
             if (maxProps := cls.__options__.maxv) and isinstance(maxProps, int):
                 if len(value) > maxProps:
-                    raise ValidationError("maximum property count exceeded")
+                    raise ValueError("maximum property count exceeded")
 
         return value
 
@@ -129,21 +127,35 @@ class ArrayOf(DefinitionBase):
 
         if (minProps := cls.__options__.minv) and isinstance(minProps, int):
             if len(val) < minProps:
-                raise ValidationError("minimum property count not met")
+                raise ValueError("minimum property count not met")
 
         if (maxProps := cls.__options__.maxv) and isinstance(maxProps, int):
             if len(val) > maxProps:
-                raise ValidationError("maximum property count exceeded")
+                raise ValueError("maximum property count exceeded")
 
         vtype = cls.__options__.vtype
+
+        # Check known type value objects
         if val_cls := cls.__config__.types.get(vtype):
-            return {"__root__": [val_cls.validate(v) for v in val]}
-        #check if primitive type
-        elif vtype in PRIMITIVE_TYPES:
-            raise ValueError(f"ValueType of `{vtype}` is valid --- Need to finish validation")
-            #for v in value.values():
+            if isinstance(val, list):
+               for v in val:
+                    val_cls.validate({'__root__': v}) 
+            elif isinstance(val, dict):
+                for v in val.values():
+                    val_cls.validate({'__root__': v}) 
+            else:
+                raise ValueError(f"ValueType of `{vtype}` is unknown")   
         else:
-            raise ValueError(f"ValueType of `{vtype}` is not valid within the schema")
+            # Else, check for primitives 
+            if isinstance(val, list):
+               for v in val:
+                if not isinstance(v, (int, float, str)):
+                    raise ValueError(f"Value of `{v}` is not valid within the schema") 
+            else:
+                if not isinstance(v, (int, float, str)):
+                    raise ValueError(f"Value of `{v}` is not valid within the schema") 
+
+        return value
 
     # Helpers
     @classmethod
@@ -163,7 +175,7 @@ class Choice(DefinitionBase, metaclass=OptionalFieldsMeta):
     """
     A discriminated union: one type selected from a set of named or labeled types.
     """
-    # __root__: dict
+    # __root__: Union[set, str, tuple]
     __options__ = Options(data_type="Choice")  # pylint: disable=used-before-assignment
 
     @root_validator(pre=True)
@@ -175,16 +187,22 @@ class Choice(DefinitionBase, metaclass=OptionalFieldsMeta):
         :return: original data
         """
 
-        if len(value.keys()) != 1:
-            raise ValidationError(f"Choice type should only have one field, not {len(value.keys())}")
+        # If primative directly in choice
+        if val := value.get("__root__"):
+
+            if len(value.keys()) > 1:
+                raise ValueError(f"Choice type should only have one field, not {len(value.keys())}")
+            
+            for v in cls.__fields__.keys():
+                if val == v:
+                    return value
+                
+            raise ValueError(f"Value `{val}` is not valid for {cls.name}")
+                
+        # Else object found, regular pydantic validation
+        else:
+            return value
         
-        #check if selection is valid
-        val = list(value.keys())[0]
-        for v in cls.__fields__.keys():
-            if val == v:
-                return value
-        
-        raise ValidationError(f"Value `{val}` is not valid for {cls.name}")
 
     class Options:
         data_type = "Choice"
@@ -226,7 +244,7 @@ class Enumerated(DefinitionBase, metaclass=EnumeratedMeta):  # pylint: disable=i
             for v in cls.__enums__:
                 if val == v.name:
                     return value
-        raise ValidationError(f"Value `{val}` is not valid for {cls.name}")
+        raise ValueError(f"Value `{val}` is not valid for {cls.name}")
 
     # Helpers
     @classmethod
@@ -252,13 +270,19 @@ class Map(DefinitionBase):
     # Validation
     @root_validator(pre=True)
     def validate_data(cls, value: dict):  # pylint: disable=no-self-argument
+
+        schema_keys = cls.__fields__.keys()
+        for msg_k, msg_v in value.items():
+            if msg_k not in schema_keys:
+                raise ValueError(f"KeyType of `{msg_k}` is not valid within the schema") 
+
         if (minProps := cls.__options__.minv) and isinstance(minProps, int):
             if len(value) < minProps:
-                raise ValidationError("minimum property count not met")
+                raise ValueError("minimum property count not met")
 
         if (maxProps := cls.__options__.maxv) and isinstance(maxProps, int):
             if len(value) > maxProps:
-                raise ValidationError("maximum property count exceeded")
+                raise ValueError("maximum property count exceeded")
 
         return value
 
@@ -275,7 +299,7 @@ class MapOf(DefinitionBase):
     An unordered map from a set of keys of the same type to values with the same semantics.
     Each key has key type ktype, and is mapped to value type vtype.
     """
-    # __root__: dict
+    __root__: Union[set, str, tuple]
     __options__ = Options(data_type="MapOf")  # pylint: disable=used-before-assignment
 
     @root_validator(pre=True)
@@ -287,37 +311,28 @@ class MapOf(DefinitionBase):
         :return: original data
         """
 
-        # invalid if any of its keys is not an instance of ktype.
-        ktype = cls.__options__.ktype
-        if val_cls := cls.__config__.types.get(ktype):
-           for k in value.keys():
-            val_cls.validate(k) 
-        else:
-            raise ValueError(f"KeyType of `{ktype}` is not valid within the schema")
-
-
-        # invalid if any of its elements is not an instance of vtype.
-        vtype = cls.__options__.vtype
-        if val_cls := cls.__config__.types.get(vtype):
-           for v in value.values():
-               val_cls.validate(v) 
-        #check if primitive type
-        elif vtype in PRIMITIVE_TYPES:
-            raise ValueError(f"ValueType of `{vtype}` is valid --- Need to finish validation")
-            #for v in value.values():
-
-        else:
-            raise ValueError(f"ValueType of `{vtype}` is not valid within the schema")
+        val = value.get("__root__", None)
 
         if (minProps := cls.__options__.minv) and isinstance(minProps, int):
-            if len(value) < minProps:
-                raise ValidationError("minimum property count not met")
+            if len(val) < minProps:
+                raise ValueError("minimum property count not met")
 
         if (maxProps := cls.__options__.maxv) and isinstance(maxProps, int):
-            if len(value) > maxProps:
-                raise ValidationError("maximum property count exceeded")
-            
-        return value
+            if len(val) > maxProps:
+                raise ValueError("maximum property count exceeded")        
+
+        ktype = cls.__options__.ktype
+        if val_cls := cls.__config__.types.get(ktype):
+           for k in val.keys():
+                val_cls.validate({'__root__': k}) 
+        else:
+            raise ValueError(f"KeyType of `{ktype}` is not valid within the schema")   
+
+        vtype = cls.__options__.vtype
+        if val_cls := cls.__config__.types.get(vtype):
+           return {"__root__": [val_cls.validate(v) for v in val.values()]}
+        else:
+            raise ValueError(f"ValueType of `{vtype}` is not valid within the schema")                
 
     # Helpers
     @classmethod
@@ -350,11 +365,11 @@ class Record(DefinitionBase):
         """
         if (minProps := cls.__options__.minv) and isinstance(minProps, int):
             if len(value) < minProps:
-                raise ValidationError("minimum property count not met")
+                raise ValueError("minimum property count not met")
 
         if (maxProps := cls.__options__.maxv) and isinstance(maxProps, int):
             if len(value) > maxProps:
-                raise ValidationError("maximum property count exceeded")
+                raise ValueError("maximum property count exceeded")
 
         return value
 

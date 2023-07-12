@@ -10,6 +10,7 @@ from .definitionBase import DefinitionBase
 from .options import Options  # pylint: disable=unused-import
 __all__ = ["Primitive", "Binary", "Boolean", "Integer", "Number", "String", "validate_format"]
 Primitive = Union["Binary", "Boolean", "Integer", "Number", "String"]
+primitives = ["Binary", "Boolean", "Integer", "Number", "String"]
 
 
 def validate_format(cls: DefinitionBase, fmt: str, val: Any) -> Any:
