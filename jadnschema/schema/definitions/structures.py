@@ -3,7 +3,7 @@ JADN Structure Types
 """
 from enum import Enum, EnumMeta
 from typing import Any, ClassVar, Optional, Union
-from pydantic import Extra, ValidationError, root_validator
+from pydantic import Extra, root_validator
 from pydantic.utils import GetterDict
 
 from .definitionBase import DefinitionBase, DefinitionMeta
@@ -127,11 +127,11 @@ class ArrayOf(DefinitionBase):
 
         if (minProps := cls.__options__.minv) and isinstance(minProps, int):
             if len(val) < minProps:
-                raise ValidationError("minimum property count not met")
+                raise ValueError("minimum property count not met")
 
         if (maxProps := cls.__options__.maxv) and isinstance(maxProps, int):
             if len(val) > maxProps:
-                raise ValidationError("maximum property count exceeded")
+                raise ValueError("maximum property count exceeded")
 
         vtype = cls.__options__.vtype
 
@@ -278,11 +278,11 @@ class Map(DefinitionBase):
 
         if (minProps := cls.__options__.minv) and isinstance(minProps, int):
             if len(value) < minProps:
-                raise ValidationError("minimum property count not met")
+                raise ValueError("minimum property count not met")
 
         if (maxProps := cls.__options__.maxv) and isinstance(maxProps, int):
             if len(value) > maxProps:
-                raise ValidationError("maximum property count exceeded")
+                raise ValueError("maximum property count exceeded")
 
         return value
 
@@ -315,11 +315,11 @@ class MapOf(DefinitionBase):
 
         if (minProps := cls.__options__.minv) and isinstance(minProps, int):
             if len(val) < minProps:
-                raise ValidationError("minimum property count not met")
+                raise ValueError("minimum property count not met")
 
         if (maxProps := cls.__options__.maxv) and isinstance(maxProps, int):
             if len(val) > maxProps:
-                raise ValidationError("maximum property count exceeded")        
+                raise ValueError("maximum property count exceeded")        
 
         ktype = cls.__options__.ktype
         if val_cls := cls.__config__.types.get(ktype):
@@ -365,11 +365,11 @@ class Record(DefinitionBase):
         """
         if (minProps := cls.__options__.minv) and isinstance(minProps, int):
             if len(value) < minProps:
-                raise ValidationError("minimum property count not met")
+                raise ValueError("minimum property count not met")
 
         if (maxProps := cls.__options__.maxv) and isinstance(maxProps, int):
             if len(value) > maxProps:
-                raise ValidationError("maximum property count exceeded")
+                raise ValueError("maximum property count exceeded")
 
         return value
 
