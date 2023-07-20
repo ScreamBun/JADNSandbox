@@ -20,6 +20,7 @@ __all__ = [
     "jidl_dump", "jidl_dumps",
     "json_dump", "json_dumps",
     "md_dump", "md_dumps",
+    "plant_dump", "plant_dumps",
     # "proto_dump", "proto_dumps",
     "relax_dump", "relax_dumps",
     # "thrift_dump", "thrift_dumps",
