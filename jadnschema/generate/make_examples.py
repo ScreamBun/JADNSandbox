@@ -7,16 +7,11 @@ from typing import List, Union
 import jadn
 import json
 import os
-from jadnschema.convert import json_dumps
-import fire
 from jsf import JSF
 from random import randint
+from jadn.translate import json_schema_dumps
 
-from jadnschema.jadn import loads
-from jadnschema.schema.schema import Schema 
-from jadnschema.transform.resolve import resolve_imports
-
-def make_ex(schema: Schema) -> List[str]:
+def make_ex(schema: dict) -> List[str]:
     """ 
     1. load VALID JADN schema
     2. convert to JSON schema
@@ -25,7 +20,7 @@ def make_ex(schema: Schema) -> List[str]:
     """
 
     ### DOES NOT WORK WITH COMPLEX SCHEMAS ??
-    sc2 = json_dumps(schema) # formatted json string --- note: this generates data in the JS API
+    sc2 = json_schema_dumps(schema) # formatted json string --- note: this generates data in the JS API
     sc2_js = json.loads(sc2) # json dict --- note: this DOES NOT generate
 
     # note : the js api works with data, but the python parser does not resolve the reference correctly
