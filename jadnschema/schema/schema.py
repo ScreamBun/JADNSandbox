@@ -8,7 +8,7 @@ from io import BufferedIOBase, TextIOBase
 from numbers import Number
 from pathlib import Path
 from typing import Any, Callable, Dict, List, NoReturn, Optional, Set, Union, get_args
-from pydantic import Field
+from pydantic import Field, root_validator
 from pydantic.main import ModelMetaclass, PrivateAttr  # pylint: disable=no-name-in-module
 from .baseModel import BaseModel
 from .consts import EXTENSIONS, OPTION_ID
@@ -103,7 +103,21 @@ class Schema(BaseModel, metaclass=SchemaMeta):  # pylint: disable=invalid-metacl
 
             return cls.validate(value)
         raise SchemaException(f"{type_} is not a valid type within the schema")
-
+    
+    @root_validator
+    def validate_exports(cls, v: dict):
+        invalid_exports=[]
+        #check info, check exports, check types exist
+        if v is None or v.get("info") is None or v.get("info").get("exports") is None:
+            return v 
+        if exports := v.get("info").get("exports")["__root__"]:
+            for export in exports:
+                if not v.get("types").get(export):
+                    invalid_exports.append(export)
+            if len(invalid_exports) != 0:
+                raise SchemaException(f"Invalid exports within the schema: {invalid_exports}")  
+            return v          
+        
     # Helpers
     def _dumps(self, val: Union[dict, float, int, str, tuple, Number], indent: int = 2, _level: int = 0) -> str:
         """
