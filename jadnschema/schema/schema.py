@@ -105,18 +105,17 @@ class Schema(BaseModel, metaclass=SchemaMeta):  # pylint: disable=invalid-metacl
         raise SchemaException(f"{type_} is not a valid type within the schema")
     
     @root_validator
-    def validate_exports(cls, v: dict):
+    def validate_exports(cls, v):
         invalid_exports=[]
-        #check info, check exports, check types exist
-        if v is None or v.get("info") is None or v.get("info").get("exports") is None:
-            return v 
-        if exports := v.get("info").get("exports")["__root__"]:
-            for export in exports:
-                if not v.get("types").get(export):
-                    invalid_exports.append(export)
-            if len(invalid_exports) != 0:
-                raise SchemaException(f"Invalid exports within the schema: {invalid_exports}")  
-            return v          
+        #check if info and info.exports exist
+        if v is not None and v.get("info") is not None and v.get("info").get("exports") is not None:
+            if exports := v.get("info").get("exports")["__root__"]:
+                for export in exports:
+                    if not v.get("types").get(export):
+                        invalid_exports.append(export)
+                if len(invalid_exports) != 0:
+                    raise SchemaException(f"Invalid exports within the schema: {invalid_exports}")  
+        return v          
         
     # Helpers
     def _dumps(self, val: Union[dict, float, int, str, tuple, Number], indent: int = 2, _level: int = 0) -> str:
