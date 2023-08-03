@@ -4,6 +4,7 @@ JADN conversion enumerated types
 from ...utils import EnumBase
 
 
+
 class SchemaFormats(str, EnumBase):
     """Valid Schema Formats for conversion"""
     # CDDL = "cddl"      #: Convert to [CDDL Format](https://www.rfc-editor.org/rfc/rfc8610)
@@ -18,6 +19,23 @@ class SchemaFormats(str, EnumBase):
     # Thrift = "thrift"  #: Convert to [Thrift Format](https://thrift.apache.org/)
     JSON = "json"        #: Using JADN PyPkg, no logic in JADN Schema 
     PlantUML = "puml"    #: Using JADN PyPkg, no logic in JADN Schema
+
+class SchemaVisualizationFormats(str, EnumBase):
+    """Valid Schema Formats for conversion/visualization"""
+    # CDDL = "cddl"      #: Convert to [CDDL Format](https://www.rfc-editor.org/rfc/rfc8610)
+    GraphViz = "gv"    #: Convert to [GraphViz Format](https://graphviz.org/doc/info/lang.html)
+    HTML = "html"      #: Convert to HTML Format
+    JIDL = "jidl"      #: Convert to [JIDL Format]()
+    # JAS = "jas"        #: Convert to [JAS Format]()
+    MarkDown = "md"    #: Convert to MarkDown Format
+    # Proto = "proto"    #: Convert to [ProtoBuf Format](https://developers.google.com/protocol-buffers/docs/proto3)
+    # Thrift = "thrift"  #: Convert to [Thrift Format](https://thrift.apache.org/)
+    PlantUML = "puml"    #: Using JADN PyPkg, no logic in JADN Schema
+
+class SchemaTranslationFormats(str, EnumBase):
+    """Valid Schema Formats for conversion/translation"""
+    Relax = "rng"      #: Convert to [RelaxNG Format](https://relaxng.org/spec-20011203.html)
+    JSON = "json"        #: Using JADN PyPkg, no logic in JADN Schema 
 
 
 class CommentLevels(str, EnumBase):

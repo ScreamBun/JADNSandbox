@@ -40,5 +40,7 @@ __all__ = [
     # Message Conversion
     "Message",
     "MessageType",
-    "SerialFormats"
+    "SerialFormats",
+    "SchemaTranslationFormats",
+    "SchemaVisualizationFormats"
 ]
