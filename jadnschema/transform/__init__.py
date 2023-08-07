@@ -8,10 +8,12 @@ JADN Transform: Process a JADN schema to produce another JADN schema:
 
 from .resolve import SchemaPackage, resolve_imports
 from .transform import strip_comments, unfold_extensions
+from .resolve_references import resolve
 
 __all__ = [
     "SchemaPackage",
     "resolve_imports",
     "strip_comments",
-    "unfold_extensions"   
+    "unfold_extensions", 
+    "resolve"   
 ]
