@@ -34,7 +34,7 @@ def update_types(types: Union[dict, list], formats: Dict[str, Callable] = None, 
                 def_cls.update_forward_refs(**cls_defs)
             except Exception as err:
                 # Schema is unresolved
-                if err.name.split('__')[0] in namespace:
+                if namespace and err.name.split('__')[0] in namespace:
                    continue
                 else:
                     raise Exception(err)
@@ -64,8 +64,13 @@ class Schema(BaseModel, metaclass=SchemaMeta):  # pylint: disable=invalid-metacl
     __formats__: Dict[str, Callable] = ValidationFormats
 
     def __init__(self, **kwargs):
+        if "info" in kwargs and "namespaces" in kwargs["info"]:
+            nms = set(kwargs["info"]["namespaces"])
+        else: 
+            nms = None
+      
         if "types" in kwargs:
-            kwargs["types"] = update_types(kwargs["types"], self.__formats__, set(kwargs["info"]["namespaces"]))
+            kwargs["types"] = update_types(kwargs["types"], self.__formats__, nms)
         super().__init__(**kwargs)
         DefinitionBase.__config__.types = self.types
 
