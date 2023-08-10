@@ -24,13 +24,20 @@ __pdoc__ = {
 }
 
 
-def update_types(types: Union[dict, list], formats: Dict[str, Callable] = None) -> dict:
+def update_types(types: Union[dict, list], formats: Dict[str, Callable] = None, namespace: Set = None) -> dict:
     if isinstance(types, list):
         def_types = {td[0]: make_def(td, formats) for td in types}
         cls_defs = {d.__name__: d for d in def_types.values()}
         cls_defs.update(DefTypes)
         for def_cls in def_types.values():
-            def_cls.update_forward_refs(**cls_defs)
+            try:
+                def_cls.update_forward_refs(**cls_defs)
+            except Exception as err:
+                # Schema is unresolved
+                if err.name.split('__')[0] in namespace:
+                   continue
+                else:
+                    raise Exception(err)
         return def_types
     return types
 
@@ -58,7 +65,7 @@ class Schema(BaseModel, metaclass=SchemaMeta):  # pylint: disable=invalid-metacl
 
     def __init__(self, **kwargs):
         if "types" in kwargs:
-            kwargs["types"] = update_types(kwargs["types"], self.__formats__)
+            kwargs["types"] = update_types(kwargs["types"], self.__formats__, set(kwargs["info"]["namespaces"]))
         super().__init__(**kwargs)
         DefinitionBase.__config__.types = self.types
 
