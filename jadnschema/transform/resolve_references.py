@@ -16,6 +16,6 @@ def resolve(schema_name: str, schema: dict, schema_list: list) -> list | str:
     if len(references) == 0:
         raise ValueError("No references to resolve")
     sc2 = resolve_imports(schema, schema_list, references)        # Resolve referenced definitions
-    #jadn.dump(sc2, os.path.join(reference_dir, filename + '-resolved.jadn'))   # Save resolved base package
-    return [{'schema_name': filename + '-resolved', "schema_fmt": 'jadn', 'schema':sc2 }]
+    schema = jadn.dumps(sc2)   # Save resolved base package
+    return [{'schema_name': filename + '-resolved', "schema_fmt": 'jadn', 'schema': schema }]
     #return schema
