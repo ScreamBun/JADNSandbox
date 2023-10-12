@@ -139,10 +139,10 @@ class ArrayOf(DefinitionBase):
         if val_cls := cls.__config__.types.get(vtype):
             if isinstance(val, list):
                for v in val:
-                    val_cls.validate({'__root__': v}) 
+                    val_cls.validate(v) 
             elif isinstance(val, dict):
                 for v in val.values():
-                    val_cls.validate({'__root__': v}) 
+                    val_cls.validate(v) 
             else:
                 raise ValueError(f"ValueType of `{vtype}` is unknown")   
         else:
@@ -324,13 +324,13 @@ class MapOf(DefinitionBase):
         ktype = cls.__options__.ktype
         if val_cls := cls.__config__.types.get(ktype):
            for k in val.keys():
-                val_cls.validate({'__root__': k}) 
+                val_cls.validate(k) 
         else:
             raise ValueError(f"KeyType of `{ktype}` is not valid within the schema")   
 
         vtype = cls.__options__.vtype
         if val_cls := cls.__config__.types.get(vtype):
-           return {"__root__": [val_cls.validate(v) for v in val.values()]}
+           return [val_cls.validate(v) for v in val.values()]
         else:
             raise ValueError(f"ValueType of `{vtype}` is not valid within the schema")                
 
@@ -363,6 +363,7 @@ class Record(DefinitionBase):
         :raise ValueError: invalid data given
         :return: original data
         """
+                
         if (minProps := cls.__options__.minv) and isinstance(minProps, int):
             if len(value) < minProps:
                 raise ValueError("minimum property count not met")

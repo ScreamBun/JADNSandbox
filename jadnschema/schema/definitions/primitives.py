@@ -55,9 +55,9 @@ class Binary(DefinitionBase):
         min_len = cls.__options__.minv or 0
         max_len = cls.__options__.maxv or 255
         if min_len > val_len:
-            raise ValidationError(f"{cls.name} is invalid, minimum length of {min_len:,} bytes not met")
+            raise ValidationError(f"{cls.name} is invalid, minimum length of {min_len} bytes not met")
         if max_len < val_len:
-            raise ValidationError(f"{cls.name} is invalid, maximum length of {min_len:,} bytes exceeded")
+            raise ValidationError(f"{cls.name} is invalid, maximum length of {max_len} bytes exceeded")
         return value
 
     class Config:
@@ -104,9 +104,9 @@ class Integer(DefinitionBase):
         max_val = cls.__options__.maxv or 0
 
         if min_val > val:
-            raise ValidationError(f"{cls.name} is invalid, minimum of {min_val:,} not met")
+            raise ValidationError(f"{cls.name} is invalid, minimum of {min_val} not met")
         if max_val != 0 and max_val < val:
-            raise ValidationError(f"{cls.name} is invalid, maximum of {max_val:,} exceeded")
+            raise ValidationError(f"{cls.name} is invalid, maximum of {max_val} exceeded")
         return value
 
     class Config:
@@ -139,9 +139,9 @@ class Number(DefinitionBase):
         max_val = cls.__options__.maxf or 0
 
         if min_val > val:
-            raise ValidationError(f"{cls.name} is invalid, minimum of {min_val:,} not met")
+            raise ValidationError(f"{cls.name} is invalid, minimum of {min_val} not met")
         if max_val != 0 and max_val < val:
-            raise ValidationError(f"{cls.name} is invalid, maximum of {max_val:,} exceeded")
+            raise ValidationError(f"{cls.name} is invalid, maximum of {max_val} exceeded")
         return value
 
     class Config:
@@ -174,9 +174,9 @@ class String(DefinitionBase):
         min_len = cls.__options__.minv or 0
         max_len = cls.__options__.maxv or 255
         if min_len > val_len:
-            raise ValidationError(f"{cls.name} is invalid, minimum length of {min_len:,} characters not met")
+            raise ValueError(f"{cls.name} is invalid, minimum length of {min_len} characters not met")
         if max_len < val_len:
-            raise ValidationError(f"{cls.name} is invalid, maximum length of {min_len:,} characters exceeded")
+            raise ValueError(f"{cls.name} is invalid, maximum length of {max_len} characters exceeded")
         return value
 
     class Config:
