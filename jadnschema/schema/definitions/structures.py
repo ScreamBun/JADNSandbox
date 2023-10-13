@@ -125,6 +125,10 @@ class ArrayOf(DefinitionBase):
         """
         val = value.get("__root__", None)
 
+        # check format: within []
+        if not isinstance(val, list):
+            raise ValueError("Expected ArrayOf values")
+
         if (minProps := cls.__options__.minv) and isinstance(minProps, int):
             if len(val) < minProps:
                 raise ValueError("minimum property count not met")
