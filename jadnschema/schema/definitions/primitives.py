@@ -53,7 +53,8 @@ class Binary(DefinitionBase):
             validate_format(cls, fmt, val)
         val_len = len(val)
         min_len = cls.__options__.minv or 0
-        max_len = cls.__options__.maxv or 255
+        max_len = cls.__config__.info.get('$MaxBinary') if cls.__options__.maxv is None or cls.__options__.maxv == 0 else cls.__options__.maxv 
+        #TODO: get byte length?
         if min_len > val_len:
             raise ValidationError(f"{cls.name} is invalid, minimum length of {min_len} bytes not met")
         if max_len < val_len:
@@ -172,7 +173,7 @@ class String(DefinitionBase):
             validate_format(cls, fmt, val)
         val_len = len(val)
         min_len = cls.__options__.minv or 0
-        max_len = cls.__options__.maxv or 255
+        max_len = cls.__config__.info.get('$MaxString') if cls.__options__.maxv is None or cls.__options__.maxv == 0 else  cls.__options__.maxv 
         if min_len > val_len:
             raise ValueError(f"{cls.name} is invalid, minimum length of {min_len} characters not met")
         if max_len < val_len:

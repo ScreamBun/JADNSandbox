@@ -92,13 +92,14 @@ class Array(DefinitionBase):
             # PASS : {ipv4-addr: MTI3LjAuMC4x, prefix-length: 30}
             value = {k:v for k,v in zip(cls.__fields__.keys(), value)}
 
-            if (minProps := cls.__options__.minv) and isinstance(minProps, int):
-                if len(value) < minProps:
-                    raise ValueError("minimum property count not met")
+            minProps = cls.__options__.minv or 0
+            maxProps = cls.__config__.info.get('$MaxElements') if cls.__options__.maxv is None or cls.__options__.maxv == 0 else cls.__options__.maxv 
 
-            if (maxProps := cls.__options__.maxv) and isinstance(maxProps, int):
-                if len(value) > maxProps:
-                    raise ValueError("maximum property count exceeded")
+            if len(value) < minProps:
+                raise ValueError("minimum property count not met")
+
+            if len(value) > maxProps:
+                raise ValueError("maximum property count exceeded")
 
         return value
 
@@ -129,13 +130,15 @@ class ArrayOf(DefinitionBase):
         if not isinstance(val, list):
             raise ValueError("Expected ArrayOf values")
 
-        if (minProps := cls.__options__.minv) and isinstance(minProps, int):
-            if len(val) < minProps:
-                raise ValueError("minimum property count not met")
 
-        if (maxProps := cls.__options__.maxv) and isinstance(maxProps, int):
-            if len(val) > maxProps:
-                raise ValueError("maximum property count exceeded")
+        minProps = cls.__options__.minv or 0
+        maxProps = cls.__config__.info.get('$MaxElements') if cls.__options__.maxv is None or cls.__options__.maxv == 0 else cls.__options__.maxv 
+
+        if len(value) < minProps:
+            raise ValueError("minimum property count not met")
+
+        if len(value) > maxProps:
+            raise ValueError("maximum property count exceeded")
 
         vtype = cls.__options__.vtype
 
@@ -191,7 +194,7 @@ class Choice(DefinitionBase, metaclass=OptionalFieldsMeta):
         :return: original data
         """
 
-        # If primative directly in choice
+        # If primitive directly in choice
         if val := value.get("__root__"):
 
             if len(value.keys()) > 1:
@@ -280,13 +283,14 @@ class Map(DefinitionBase):
             if msg_k not in schema_keys:
                 raise ValueError(f"KeyType of `{msg_k}` is not valid within the schema") 
 
-        if (minProps := cls.__options__.minv) and isinstance(minProps, int):
-            if len(value) < minProps:
-                raise ValueError("minimum property count not met")
+        minProps = cls.__options__.minv or 0
+        maxProps = cls.__config__.info.get('$MaxElements') if cls.__options__.maxv is None or cls.__options__.maxv == 0 else cls.__options__.maxv 
 
-        if (maxProps := cls.__options__.maxv) and isinstance(maxProps, int):
-            if len(value) > maxProps:
-                raise ValueError("maximum property count exceeded")
+        if len(value) < minProps:
+            raise ValueError("minimum property count not met")
+
+        if len(value) > maxProps:
+            raise ValueError("maximum property count exceeded")
 
         return value
 
@@ -317,13 +321,14 @@ class MapOf(DefinitionBase):
 
         val = value.get("__root__", None)
 
-        if (minProps := cls.__options__.minv) and isinstance(minProps, int):
-            if len(val) < minProps:
-                raise ValueError("minimum property count not met")
+        minProps = cls.__options__.minv or 0
+        maxProps = cls.__config__.info.get('$MaxElements') if cls.__options__.maxv is None or cls.__options__.maxv == 0 else cls.__options__.maxv 
 
-        if (maxProps := cls.__options__.maxv) and isinstance(maxProps, int):
-            if len(val) > maxProps:
-                raise ValueError("maximum property count exceeded")        
+        if len(value) < minProps:
+            raise ValueError("minimum property count not met")
+
+        if len(value) > maxProps:
+            raise ValueError("maximum property count exceeded")      
 
         ktype = cls.__options__.ktype
         if val_cls := cls.__config__.types.get(ktype):
@@ -368,13 +373,14 @@ class Record(DefinitionBase):
         :return: original data
         """
                 
-        if (minProps := cls.__options__.minv) and isinstance(minProps, int):
-            if len(value) < minProps:
-                raise ValueError("minimum property count not met")
+        minProps = cls.__options__.minv or 0
+        maxProps = cls.__config__.info.get('$MaxElements') if cls.__options__.maxv is None or cls.__options__.maxv == 0 else cls.__options__.maxv 
 
-        if (maxProps := cls.__options__.maxv) and isinstance(maxProps, int):
-            if len(value) > maxProps:
-                raise ValueError("maximum property count exceeded")
+        if len(value) < minProps:
+            raise ValueError("minimum property count not met")
+
+        if len(value) > maxProps:
+            raise ValueError("maximum property count exceeded")
 
         return value
 

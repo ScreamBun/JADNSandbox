@@ -68,7 +68,10 @@ class Schema(BaseModel, metaclass=SchemaMeta):  # pylint: disable=invalid-metacl
             nms = set(kwargs["info"]["namespaces"])
         else: 
             nms = None
-      
+        
+        if "info" in kwargs and "config" in kwargs["info"]:
+            DefinitionBase.__config__.info = kwargs["info"]["config"]
+    
         if "types" in kwargs:
             kwargs["types"] = update_types(kwargs["types"], self.__formats__, nms)
         super().__init__(**kwargs)
