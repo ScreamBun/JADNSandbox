@@ -10,7 +10,7 @@ This logic can be added to other projects via the python whl.
    1) pip install -r requirements_dev.txt
 
 ## How to create the whl
-1) From setup.cfgl, update the version
+1) From setup.cfg, update the version
 2) Run: python setup.py bdist_wheel --universal
 3) Under dist, locate: jadnschema-*-py2.py3-none-any.whl
 4) Copy to the repo or project that requires this functionality
