@@ -8,7 +8,7 @@ from io import BufferedIOBase, TextIOBase
 from numbers import Number
 from pathlib import Path
 from typing import Any, Callable, Dict, List, NoReturn, Optional, Set, Union, get_args
-from pydantic import Field
+from pydantic import Field, root_validator
 from pydantic.main import ModelMetaclass, PrivateAttr  # pylint: disable=no-name-in-module
 from .baseModel import BaseModel
 from .consts import EXTENSIONS, OPTION_ID
@@ -24,13 +24,20 @@ __pdoc__ = {
 }
 
 
-def update_types(types: Union[dict, list], formats: Dict[str, Callable] = None) -> dict:
+def update_types(types: Union[dict, list], formats: Dict[str, Callable] = None, namespace: Set = None) -> dict:
     if isinstance(types, list):
         def_types = {td[0]: make_def(td, formats) for td in types}
         cls_defs = {d.__name__: d for d in def_types.values()}
         cls_defs.update(DefTypes)
         for def_cls in def_types.values():
-            def_cls.update_forward_refs(**cls_defs)
+            try:
+                def_cls.update_forward_refs(**cls_defs)
+            except Exception as err:
+                # Schema is unresolved
+                if namespace and err.name.split('__')[0] in namespace:
+                   continue
+                else:
+                    raise Exception(err)
         return def_types
     return types
 
@@ -57,8 +64,16 @@ class Schema(BaseModel, metaclass=SchemaMeta):  # pylint: disable=invalid-metacl
     __formats__: Dict[str, Callable] = ValidationFormats
 
     def __init__(self, **kwargs):
+        if "info" in kwargs and "namespaces" in kwargs["info"]:
+            nms = set(kwargs["info"]["namespaces"])
+        else: 
+            nms = None
+        
+        if "info" in kwargs and "config" in kwargs["info"]:
+            DefinitionBase.__config__.info = kwargs["info"]["config"]
+    
         if "types" in kwargs:
-            kwargs["types"] = update_types(kwargs["types"], self.__formats__)
+            kwargs["types"] = update_types(kwargs["types"], self.__formats__, nms)
         super().__init__(**kwargs)
         DefinitionBase.__config__.types = self.types
 
@@ -103,7 +118,20 @@ class Schema(BaseModel, metaclass=SchemaMeta):  # pylint: disable=invalid-metacl
 
             return cls.validate(value)
         raise SchemaException(f"{type_} is not a valid type within the schema")
-
+    
+    @root_validator
+    def validate_exports(cls, v):
+        invalid_exports=[]
+        #check if info and info.exports exist
+        if v is not None and v.get("info") is not None and v.get("info").get("exports") is not None:
+            if exports := v.get("info").get("exports")["__root__"]:
+                for export in exports:
+                    if not v.get("types").get(export):
+                        invalid_exports.append(export)
+                if len(invalid_exports) != 0:
+                    raise SchemaException(f"Invalid exports within the schema: {invalid_exports}")  
+        return v          
+        
     # Helpers
     def _dumps(self, val: Union[dict, float, int, str, tuple, Number], indent: int = 2, _level: int = 0) -> str:
         """
