@@ -19,6 +19,7 @@ class SchemaFormats(str, EnumBase):
     # Thrift = "thrift"  #: Convert to [Thrift Format](https://thrift.apache.org/)
     JSON = "json"        #: Using JADN PyPkg, no logic in JADN Schema 
     PlantUML = "puml"    #: Using JADN PyPkg, no logic in JADN Schema
+    XSD = "xsd"
 
 class SchemaVisualizationFormats(str, EnumBase):
     """Valid Schema Formats for conversion/visualization"""
