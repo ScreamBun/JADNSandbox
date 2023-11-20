@@ -36,6 +36,7 @@ class SchemaTranslationFormats(str, EnumBase):
     """Valid Schema Formats for conversion/translation"""
     Relax = "rng"      #: Convert to [RelaxNG Format](https://relaxng.org/spec-20011203.html)
     JSON = "json"        #: Using JADN PyPkg, no logic in JADN Schema 
+    XSD = "xsd"
 
 
 class CommentLevels(str, EnumBase):
