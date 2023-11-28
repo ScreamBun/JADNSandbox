@@ -33,12 +33,15 @@ class SchemaVisualizationFormats(str, EnumBase):
     # Thrift = "thrift"  #: Convert to [Thrift Format](https://thrift.apache.org/)
     PlantUML = "puml"    #: Using JADN PyPkg, no logic in JADN Schema
 
-class SchemaTranslationFormats(str, EnumBase):
-    """Valid Schema Formats for conversion/translation"""
+class SchemaTranslationFormatsForJADN(str, EnumBase):
+    """Valid Schema Formats for JADN conversion/translation"""
     Relax = "rng"      #: Convert to [RelaxNG Format](https://relaxng.org/spec-20011203.html)
     JSON = "json"        #: Using JADN PyPkg, no logic in JADN Schema 
     XSD = "xsd"
 
+class SchemaTranslationFormatsForJSON(str, EnumBase):
+    """Valid Schema Formats for JSON conversion/translation"""
+    JADN = "jadn"
 
 class CommentLevels(str, EnumBase):
     """Conversion Comment Level"""

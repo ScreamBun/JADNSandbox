@@ -41,6 +41,7 @@ __all__ = [
     "Message",
     "MessageType",
     "SerialFormats",
-    "SchemaTranslationFormats",
+    "SchemaTranslationFormatsForJADN",
+    "SchemaTranslationFormatsForJSON",
     "SchemaVisualizationFormats"
 ]

@@ -1,7 +1,7 @@
 """
 JADN conversions
 """
-from .enums import SchemaFormats, SchemaTranslationFormats, SchemaVisualizationFormats, CommentLevels, JsonEnumStyle, JsonImportStyle, JsonRootStyle
+from .enums import SchemaFormats, SchemaTranslationFormatsForJADN, SchemaTranslationFormatsForJSON, SchemaVisualizationFormats, CommentLevels, JsonEnumStyle, JsonImportStyle, JsonRootStyle
 from .readers import (
     # Conversion Functions
     # cddl_load, cddl_loads,
@@ -71,6 +71,7 @@ __all__ = [
     # Dynamic
     "dump", "dumps",
     "load", "loads",
-    "SchemaTranslationFormats",
+    "SchemaTranslationFormatsForJADN",
+    "SchemaTranslationFormatsForJSON",
     "SchemaVisualizationFormats"
 ]
