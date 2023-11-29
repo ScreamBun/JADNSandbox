@@ -8,7 +8,7 @@ from .baseReader import BaseReader
 from .jadn import jadn_load, jadn_loads
 # from .jadn_idl import jidl_load, jidl_loads
 # from .jas import jas_load, jas_loads
-# from .json_schema import json_load, json_loads
+from .json_schema import json_load, json_loads
 # from .markdown import md_load, md_loads
 # from .proto import proto_load, proto_loads
 # from .relax_ng import relax_load, relax_loads
@@ -24,7 +24,7 @@ __all__ = [
     "jadn_load", "jadn_loads",
     # "jidl_load", "jidl_loads",
     # "jas_load", "jas_loads",
-    # "json_load", "json_loads",
+    "json_load", "json_loads",
     # "md_load", "md_loads",
     # "proto_load", "proto_loads",
     # "relax_load", "relax_loads",

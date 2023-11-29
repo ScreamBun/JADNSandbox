@@ -15,6 +15,7 @@ from .relax_ng import relax_dump, relax_dumps
 from .thrift import thrift_dump, thrift_dumps
 # from .xsd import xsd_dump, xsd_dumps
 from .plant_w import plant_dump, plant_dumps
+from .js_to_jadn import json_to_jadn_dump, json_to_jadn_dumps
 
 __all__ = [
     # Base
@@ -24,6 +25,7 @@ __all__ = [
     "dot_dump", "dot_dumps",
     "html_dump", "html_dumps",
     "jadn_dump", "jadn_dumps",
+    "json_to_jadn_dump", "json_to_jadn_dumps",
     "jidl_dump", "jidl_dumps",
     # "jas_dump", "jas_dumps",
     "json_dump", "json_dumps",
