@@ -1,15 +1,16 @@
 import jadn
 import json
-import os
-from jadn.definitions import TypeName, BaseType, TypeOptions, Fields, FieldType
+from jadn.definitions import TypeName
 from typing import Union
-from .baseWriter import BaseWriter
 from ..enums import CommentLevels
 from ..helpers import register_writer
 from ....schema import Schema
 
 DEBUG = False
 D = [(f'${n}' if DEBUG else '') for n in range(10)]
+
+jss: dict = {}
+jssx: dict = {}
 
 def typedefname(jsdef: str) -> str:
     """
@@ -157,8 +158,14 @@ def json_to_jadn_dumps(schema: Union[str, dict, Schema], comm: CommentLevels = C
     """
     Create a JADN type from each definition in a Metaschema-generated JSON Schema
     """
-    jss = json.loads(schema) #this is a string
-    # assert jss['type'] == 'object', f'Unsupported JSON Schema format'
+    
+    global jss
+    if isinstance(schema, str):
+        jss = json.loads(schema)
+    else:
+        jss = schema    
+    
+    global jssx
     jssx = {v.get('$id', k): k for k, v in jss['definitions'].items()}      # Index from $id to definition
     types = {typedefname(k): v for k, v in jss['definitions'].items()}      # Index from type name to definition
     assert len(types) == len(set(types)), f'Type name collision'
@@ -183,7 +190,8 @@ def json_to_jadn_dumps(schema: Union[str, dict, Schema], comm: CommentLevels = C
 
 
 def json_to_jadn_dump(schema: Union[str, dict, Schema], comm: CommentLevels = CommentLevels.ALL, **kwargs) -> None:
-    with open(fname, 'w') as f:
-        if source:
-            f.write(f'\' Generated from {source}, {datetime.ctime(datetime.now())}"\n\n')
-        f.write(json_to_jadn_dumps(schema, **kwargs) + '\n')
+    return None
+    # with open(fname, 'w') as f:
+    #     if source:
+    #         f.write(f'\' Generated from {source}, {datetime.ctime(datetime.now())}"\n\n')
+    #     f.write(json_to_jadn_dumps(schema, **kwargs) + '\n')
