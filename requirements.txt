@@ -7,6 +7,7 @@ idna==3.4
 inflect==6.0.2
 jadn==0.6.22
 jsonpointer==2.3
+jsonschema==4.17.3
 lxml==4.9.1
 msgpack==1.0.4
 netaddr==0.8.0
