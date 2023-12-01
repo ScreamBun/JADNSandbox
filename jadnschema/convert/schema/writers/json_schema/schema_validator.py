@@ -1,3 +1,4 @@
+import json
 import traceback
 from jsonschema import Draft3Validator
 
@@ -6,6 +7,9 @@ def validate_schema(schema: dict):
     is_valid: bool = False
     
     try:
+        # if isinstance(schema, dict):
+        #     schema = json.dumps(schema, indent = 4) 
+        
         Draft3Validator.check_schema(schema)
         is_valid = True
     except Exception as e:
