@@ -35,7 +35,7 @@ __all__ = [
     # "proto_load", "proto_loads",
     # "relax_load", "relax_load",
     # "thrift_load", "thrift_loads",
-    validate_schema,
+    "validate_schema",
     # Schema Dynamic
     "dump", "dumps",
     "load", "loads",
