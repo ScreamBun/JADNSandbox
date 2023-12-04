@@ -12,7 +12,7 @@ def validate_schema(schema: dict):
         
         Draft3Validator.check_schema(schema)
         is_valid = True
-    except Exception as e:
+    except BaseException as e:
         # Full Error
         # is_valid = traceback.format_exc()
         is_valid = e.message
