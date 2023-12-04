@@ -8,7 +8,7 @@ from .html import html_dump, html_dumps
 from .jadn import jadn_dump, jadn_dumps
 from .jadn_idl import jidl_dump, jidl_dumps
 # from .jas import jas_dump, jas_dumps
-from .json_schema import json_dump, json_dumps
+from .json_schema import json_dump, json_dumps, validate_schema
 from .markdown import md_dump, md_dumps
 from .proto import proto_dump, proto_dumps
 from .relax_ng import relax_dump, relax_dumps
@@ -34,5 +34,6 @@ __all__ = [
     "proto_dump", "proto_dumps",
     "relax_dump", "relax_dumps",
     "thrift_dump", "thrift_dumps",
+    "validate_schema",
     # "xsd_dump", "xsd_dumps"
 ]
