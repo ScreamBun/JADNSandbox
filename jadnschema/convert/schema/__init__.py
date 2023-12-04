@@ -31,7 +31,8 @@ from .writers import (
     plant_dump, plant_dumps,
     proto_dump, proto_dumps,
     relax_dump, relax_dumps,
-    thrift_dump, thrift_dumps
+    thrift_dump, thrift_dumps,
+    validate_schema
     # xsd_dump, xsd_dumps
 )
 from .helpers import register, register_reader, register_writer, dump, dumps, load, loads
@@ -70,6 +71,7 @@ __all__ = [
     # "proto_load", "proto_loads",
     # "relax_load", "relax_load",
     # "thrift_load", "thrift_loads",
+    validate_schema,
     # Dynamic
     "dump", "dumps",
     "load", "loads",
