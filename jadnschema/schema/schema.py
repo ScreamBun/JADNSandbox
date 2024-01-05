@@ -12,7 +12,7 @@ from pydantic import Field, root_validator
 from pydantic.main import ModelMetaclass, PrivateAttr  # pylint: disable=no-name-in-module
 from .baseModel import BaseModel
 from .consts import EXTENSIONS, OPTION_ID
-from .info import Information
+from .info import Exports, Information
 from .definitions import DefTypes, Definition, DefinitionBase, make_def
 from .definitions.field import getFieldType
 from .extensions import unfold_extensions
@@ -124,7 +124,7 @@ class Schema(BaseModel, metaclass=SchemaMeta):  # pylint: disable=invalid-metacl
         invalid_exports=[]
         #check if info and info.exports exist
         if v is not None and v.get("info") is not None and v.get("info").get("exports") is not None:
-            if exports := v.get("info").get("exports")["__root__"]:
+            if exports := Exports.schema(v.get("info").get("exports")):
                 for export in exports:
                     if not v.get("types").get(export):
                         invalid_exports.append(export)
