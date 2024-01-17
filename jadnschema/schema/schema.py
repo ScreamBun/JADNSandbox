@@ -131,7 +131,39 @@ class Schema(BaseModel, metaclass=SchemaMeta):  # pylint: disable=invalid-metacl
                 if len(invalid_exports) != 0:
                     raise SchemaException(f"Invalid exports within the schema: {invalid_exports}")  
         return v          
+    
+    @root_validator
+    def validate_dependencies(cls, v): # Validate ktype amdnd vtype
+        jadnType = [i.data_type for i in get_args(Definition)]
         
+        for k in v.get("types").values():
+            if k.data_type == "ArrayOf":
+                typeName = k.name
+                vtype = k.__options__.vtype
+        
+            if k.data_type == "MapOf":
+                typeName = k.name
+                ktype = k.__options__.ktype
+                vtype = k.__options__.vtype
+
+                if v is not None and v.get("types") is not None and ktype is not None:
+                    if ktype in jadnType:
+                        return v
+                    for t in v.get("types"):
+                        if t == ktype:
+                            return v
+                    raise SchemaException(f"Invalid ktype for {typeName}: {ktype}")  
+            
+            if v is not None and v.get("types") is not None and vtype is not None:
+                if vtype in jadnType:
+                    return v
+                for t in v.get("types"):
+                    if t == vtype:
+                        return v
+                raise SchemaException(f"Invalid vtype for {typeName}: {vtype}")  
+        
+            return v
+            
     # Helpers
     def _dumps(self, val: Union[dict, float, int, str, tuple, Number], indent: int = 2, _level: int = 0) -> str:
         """
