@@ -133,7 +133,7 @@ class Schema(BaseModel, metaclass=SchemaMeta):  # pylint: disable=invalid-metacl
         return v          
     
     @root_validator
-    def validate_dependencies(cls, v): # Validate ktype amdnd vtype
+    def validate_dependencies(cls, v): # Validate ktype and vtype
         jadnType = [i.data_type for i in get_args(Definition)]
         if v is not None and v.get("types") is not None:  
             ktype = None
