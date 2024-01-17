@@ -135,33 +135,35 @@ class Schema(BaseModel, metaclass=SchemaMeta):  # pylint: disable=invalid-metacl
     @root_validator
     def validate_dependencies(cls, v): # Validate ktype amdnd vtype
         jadnType = [i.data_type for i in get_args(Definition)]
-        
-        for k in v.get("types").values():
-            if k.data_type == "ArrayOf":
-                typeName = k.name
-                vtype = k.__options__.vtype
-        
-            if k.data_type == "MapOf":
-                typeName = k.name
-                ktype = k.__options__.ktype
-                vtype = k.__options__.vtype
+        if v is not None and v.get("types") is not None:  
+            ktype = None
+            vtype = None
+            for k in v.get("types").values():
+                if k.data_type == "ArrayOf":
+                    typeName = k.name
+                    vtype = k.__options__.vtype
+            
+                if k.data_type == "MapOf":
+                    typeName = k.name
+                    ktype = k.__options__.ktype
+                    vtype = k.__options__.vtype
 
-                if v is not None and v.get("types") is not None and ktype is not None:
-                    if ktype in jadnType:
+                    if ktype is not None:
+                        if ktype in jadnType:
+                            return v
+                        for t in v.get("types"):
+                            if t == ktype:
+                                return v
+                        raise SchemaException(f"Invalid ktype for {typeName}: {ktype}")  
+                
+                if vtype is not None:
+                    if vtype in jadnType:
                         return v
                     for t in v.get("types"):
-                        if t == ktype:
+                        if t == vtype:
                             return v
-                    raise SchemaException(f"Invalid ktype for {typeName}: {ktype}")  
+                    raise SchemaException(f"Invalid vtype for {typeName}: {vtype}")  
             
-            if v is not None and v.get("types") is not None and vtype is not None:
-                if vtype in jadnType:
-                    return v
-                for t in v.get("types"):
-                    if t == vtype:
-                        return v
-                raise SchemaException(f"Invalid vtype for {typeName}: {vtype}")  
-        
             return v
             
     # Helpers
