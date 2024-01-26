@@ -134,24 +134,25 @@ class ArrayOf(DefinitionBase):
         minProps = cls.__options__.minv or 0
         maxProps = cls.__config__.info.get('$MaxElements') if cls.__options__.maxv is None or cls.__options__.maxv == 0 else cls.__options__.maxv 
 
-        if len(value) < minProps:
+        if len(val) < minProps:
             raise ValueError("minimum property count not met")
 
-        if len(value) > maxProps:
+        if len(val) > maxProps:
             raise ValueError("maximum property count exceeded")
 
         vtype = cls.__options__.vtype
-
+        if not vtype or vtype is None:
+            raise ValueError(f"ValueType of `{vtype}` is unknown")   
+                
         # Check known type value objects
         if val_cls := cls.__config__.types.get(vtype):
             if isinstance(val, list):
                for v in val:
-                    val_cls.validate(v) 
-            elif isinstance(val, dict):
-                for v in val.values():
-                    val_cls.validate(v) 
-            else:
-                raise ValueError(f"ValueType of `{vtype}` is unknown")   
+                    try:
+                        val_cls.validate(v) 
+                    except:
+                        raise ValueError(f"`{v}` is not a valid vtype `{vtype}`")
+                        
         else:
             # Else, check for primitives 
             if isinstance(val, list):
@@ -324,24 +325,33 @@ class MapOf(DefinitionBase):
         minProps = cls.__options__.minv or 0
         maxProps = cls.__config__.info.get('$MaxElements') if cls.__options__.maxv is None or cls.__options__.maxv == 0 else cls.__options__.maxv 
 
-        if len(value) < minProps:
+        if len(val) < minProps:
             raise ValueError("minimum property count not met")
 
-        if len(value) > maxProps:
+        if len(val) > maxProps:
             raise ValueError("maximum property count exceeded")      
 
         ktype = cls.__options__.ktype
-        if val_cls := cls.__config__.types.get(ktype):
-           for k in val.keys():
-                val_cls.validate(k) 
-        else:
+        k_cls = cls.__config__.types.get(ktype) 
+        if not ktype or ktype is None:
             raise ValueError(f"KeyType of `{ktype}` is not valid within the schema")   
 
         vtype = cls.__options__.vtype
-        if val_cls := cls.__config__.types.get(vtype):
-           return [val_cls.validate(v) for v in val.values()]
-        else:
+        v_cls = cls.__config__.types.get(vtype)
+        if not vtype or vtype is None:
             raise ValueError(f"ValueType of `{vtype}` is not valid within the schema")                
+
+        for k, v in val.items():
+            try:
+                k_cls.validate(k) 
+            except:
+                raise ValueError(f"`{k}` is not a valid ktype`{ktype}`")     
+            try:
+                v_cls.validate(v)
+            except:
+                raise ValueError(f"`{v}` is not a valid vtype `{vtype}`")
+    
+        return value
 
     # Helpers
     @classmethod
@@ -361,7 +371,7 @@ class Record(DefinitionBase):
     An ordered map from a list of keys with positions to values with positionally-defined semantics.
     Each key has a position and name, and is mapped to a value type. Represents a row in a spreadsheet or database table.
     """
-    # __root__: dict
+    #__root__: dict
     __options__ = Options(data_type="Record")  # pylint: disable=used-before-assignment
 
     @root_validator(pre=True)
