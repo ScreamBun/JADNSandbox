@@ -97,7 +97,7 @@ class Information(BaseModel):
         super().__init__(**data)
         self._config = "config" in data
         if not self._config:
-            self.config = Config()
+            self.config = Config() #TODO: fix -- empty object
 
     def schema(self) -> Dict[str, Any]:
         """
