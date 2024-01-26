@@ -98,7 +98,7 @@ def encode_msg(msg: dict, enc: SerialFormats = SerialFormats.JSON, raw: bool = F
     raise ReferenceError(f"Invalid encoding `{enc}` specified, must be one of {', '.join(serializations.encode.keys())}")
 
 
-def decode_msg(msg: Union[bytes, dict, str], enc: SerialFormats, raw: bool = False) -> dict:
+def decode_msg(msg: Union[bytes, dict, str], enc: SerialFormats, raw: bool = False, *args, **kwargs) -> dict:
     """
     Decode the given message using the serialization specified
     :param msg: message to decode
@@ -116,7 +116,12 @@ def decode_msg(msg: Union[bytes, dict, str], enc: SerialFormats, raw: bool = Fal
         msg = msg.encode("utf-8") if enc.is_binary(enc) and isinstance(msg, str) else msg
         enc = (enc if isinstance(enc, str) else enc.value).lower()
         if decoder := serializations.decode.get(enc):
-            msg = decoder(msg)
+            
+            root = kwargs.get('root', None)
+            if root == None:
+                root = "message"  
+            
+            msg = decoder(msg, root=root)
             return default_encode(msg, extra_decoders)
         raise ReferenceError(f"Invalid encoding `{enc}` specified, must be one of {', '.join(serializations.decode.keys())}")
     raise TypeError(f"Message is not expected type {bytes}/{str}, got {type(msg)}")

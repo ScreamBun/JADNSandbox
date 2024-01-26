@@ -97,19 +97,28 @@ def _xml_to_dict(xml: dict) -> dict:
     return tmp
 
 
-def xml_encode(msg: dict) -> str:
+def xml_encode(msg: dict, *args, **kwargs) -> str:
     """
     Encode the given message to XML format
     :param msg: message to convert
     :return: XML formatted message
     """
-    return xmltodict.unparse({"message": msg})
+    root = kwargs.get('root', None)
+    if root == None:
+        root = "message"    
+    
+    return xmltodict.unparse({root: msg})
 
 
-def xml_decode(msg: str) -> dict:
+def xml_decode(msg: str, *args, **kwargs) -> dict:
     """
     Decode the given message to JSON format
     :param msg: message to convert
     :return: JSON formatted message
     """
-    return _xml_to_dict(xmltodict.parse(msg))["message"]
+    
+    root = kwargs.get('root', None)
+    if root == None:
+        root = "message"  
+    
+    return _xml_to_dict(xmltodict.parse(msg))[root]
