@@ -1,0 +1,14 @@
+{
+  "info": {
+    "package": "http://test/v1.0",
+    "exports": ["MapOf-Strings"]
+  },
+  "types": [
+    ["MapOf-Strings", "MapOf", ["+String-Name-1", "*String-Name-2", "{1", "}5"], ""],
+    ["MapOf-Ints", "MapOf", ["+String-Name-1", "*Integer-Name-2"], ""],
+    ["String-Name-1", "String", [], "test3"],
+    ["String-Name-2", "String", [], "test4"],
+    ["Integer-Name-1", "Integer", [], ""],
+    ["Integer-Name-2", "Integer", [], ""]
+  ]
+}

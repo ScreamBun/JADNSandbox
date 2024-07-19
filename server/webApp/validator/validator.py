@@ -3,17 +3,14 @@ import random
 import cbor_json
 import binascii
 
-from io import StringIO
 from typing import Tuple, Union
 from jadnschema import jadn
 from jadnschema.schema import Schema
 from jadnschema.convert.message import Message, SerialFormats, decode_msg
-from unittest import TextTestRunner
 from pydantic import ValidationError
 
 from webApp.utils import constants
 from webApp.validator.utils import getValidationErrorMsg, getValidationErrorPath
-from .profiles import get_profile_suite, load_test_suite, tests_in_suite, TestResults
 
 
 class Validator:
@@ -30,9 +27,6 @@ class Validator:
         "Validation failed",
         "Validation error"
     ]
-    # Schema Test suites
-    _unittest_suite = load_test_suite()
-    _loaded_tests = tests_in_suite(_unittest_suite)
 
     def validateSchema(self, schema: Union[bytes, dict, str], sm: bool = True) -> Tuple[bool, Union[str, Schema]]:
         """
@@ -135,31 +129,3 @@ class Validator:
         else:
             return False, "Invalid Export: The decode message type was not found in the schema", "", msg
 
-    # Profile test validation
-    def getProfileTests(self, profile: str = None) -> dict:
-        profile_tests = self._loaded_tests
-        if profile:
-            for unit, info in self._loaded_tests.items():
-                if profile in info["profiles"]:
-                    return {unit: info}
-            return {}
-        return profile_tests
-
-    def validateSchemaProfile(self, schema: Union[bytes, dict, str, Schema], profile: str = "language") -> dict:
-        schema_obj: Schema = None
-        if isinstance(schema, Schema):
-            schema_obj = schema
-        elif isinstance(schema, dict):
-            schema_obj = Schema.parse_obj(schema)
-        elif isinstance(schema, (bytes, str)):
-            schema_obj = Schema.parse_raw(schema)
-
-        if test_suite := get_profile_suite(self._unittest_suite, profile, schema=schema_obj):
-            test_log = StringIO()
-            results = TextTestRunner(
-                stream=test_log,
-                failfast=False,
-                resultclass=TestResults
-            ).run(test_suite)
-            return results.getReport(verbose=True)
-        return {}
